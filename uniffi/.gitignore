@@ -1,0 +1,36 @@
+# ignore Mac OS metadata
+.DS_Store
+
+# ignore JetBrains IDE project specific files
+.idea
+.fleet
+
+# ignore VSCode project specific files
+.vscode
+
+# Env file
+.env
+
+# NYC test runnner
+.nyc_output
+
+node_modules
+
+*.log
+
+# Ultra runner build cache
+.ultra.cache.json
+
+# Yarn
+.yarn/*
+!.yarn/cache
+!.yarn/constraints.pro
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Rust build artifacts
+/target
+

@@ -1,0 +1,5 @@
+namespace kotlin_dpp {
+    u32 latest_protocol_version();
+};
+
+

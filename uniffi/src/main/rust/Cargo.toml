@@ -1,0 +1,20 @@
+[package]
+name = "kotlin-dpp"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "dpp"
+crate-type = ["cdylib"]
+
+[dependencies]
+dpp = { git = "https://github.com/dashpay/platform.git", branch = "v0.25-dev", features = ["cbor"], default-features = false }
+uniffi = { version = "0.23.0" }
+serde_json = { version = "1.0" }
+
+[build-dependencies]
+uniffi = { version = "0.23.0", features = [ "build" ] }
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "uniffi-bindgen.rs"

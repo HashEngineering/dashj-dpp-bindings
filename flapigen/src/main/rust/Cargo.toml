@@ -1,0 +1,23 @@
+[package]
+name = "flapigen_test_jni"
+version = "0.1.0"
+authors = ["Evgeniy A. Dushistov <dushistov@mail.ru>"]
+build = "build.rs"
+edition = "2018"
+
+[lib]
+name = "java_dpp"
+crate-type = ["cdylib"]
+
+[dependencies]
+log = "0.4.6"
+chrono = "0.4.6"
+env_logger = "0.10.0"
+dpp = { git = "https://github.com/dashpay/platform.git", branch = "v0.25-dev", features = ["cbor"], default-features = false }
+ciborium = "0.2.0"
+
+[build-dependencies]
+env_logger = "0.10.0"
+log = "0.4.6"
+flapigen = "0.6.0"
+bindgen = { version = "0.65.1", default-features = false, features = ["logging", "runtime", "which-rustfmt"] }

@@ -1,0 +1,25 @@
+
+use crate::jni_c_header::*;
+
+
+use dpp::version::LATEST_VERSION;
+
+
+struct ProtocolVersion {
+    version: u32,
+}
+
+impl ProtocolVersion {
+    fn latest_protocol_version() -> Self {
+        return ProtocolVersion { version: LATEST_VERSION };
+    }
+    fn get_protocol_version(&self) -> u32 {
+        return self.version;
+    }
+}
+
+foreign_class!(class ProtocolVersion {
+  self_type ProtocolVersion;
+  constructor ProtocolVersion::latest_protocol_version() -> ProtocolVersion;
+  fn ProtocolVersion::get_protocol_version(&self) -> u32;
+});
