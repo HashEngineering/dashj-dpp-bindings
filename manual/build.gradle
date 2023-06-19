@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
+    id 'org.jetbrains.kotlin.jvm'
     id 'maven-publish'
     id 'maven'
     id 'signing'
@@ -9,12 +9,6 @@ plugins {
 
 group 'org.dashj'
 version '0.25-SNAPSHOT'
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'}
-}
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
@@ -139,4 +133,4 @@ uploadArchives {
     }
 }
 
-apply from: 'ktlint.gradle'
+apply from: '../ktlint.gradle'

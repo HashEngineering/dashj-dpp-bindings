@@ -6,6 +6,6 @@ import org.junit.jupiter.api.Test
 class ProtocolVersionTest {
     @Test
     fun latestProtocolVersionTest() {
-        assertEquals(1, ProtocolVersion.latestProtocolVersion)
+        assertEquals(1, ProtocolVersion.latestProtocolVersion.toInt())
     }
 }

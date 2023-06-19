@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
+    id 'org.jetbrains.kotlin.jvm'
     id 'maven-publish'
     id 'maven'
     id 'signing'
@@ -27,7 +27,7 @@ task buildRustLibrary {
     doLast {
         exec {
             workingDir './src/main/rust'
-            commandLine 'cargo', '+nightly', 'build', '--release'
+            commandLine 'cargo', 'build', '--release'
         }
     }
 }

@@ -1,2 +1,4 @@
-rootProject.name = 'dashj-merk'
-
+rootProject.name = 'dashj-dpp-bindings'
+include 'manual'
+include 'uniffi'
+include 'flapigen'

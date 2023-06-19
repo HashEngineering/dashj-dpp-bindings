@@ -1,6 +1,6 @@
 #[allow(non_snake_case)]
 pub mod android {
-    use dpp::version::{LATEST_VERSION};
+    use dpp::version::LATEST_VERSION;
     use jni::JNIEnv;
     use jni::objects::JClass;
     use jni::sys::jint;
