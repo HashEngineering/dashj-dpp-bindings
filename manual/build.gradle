@@ -132,5 +132,3 @@ uploadArchives {
         }
     }
 }
-
-apply from: '../ktlint.gradle'
