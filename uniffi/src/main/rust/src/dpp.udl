@@ -2,4 +2,61 @@ namespace kotlin_dpp {
     u32 latest_protocol_version();
 };
 
+enum StateTransitionType {
+    "DataContractCreate",
+    "DocumentsBatch",
+    "IdentityCreate",
+    "IdentityTopUp",
+    "DataContractUpdate",
+    "IdentityUpdate",
+    "IdentityCreditWithdrawal",
+    "IdentityCreditTransfer",
+};
 
+enum KeyType {
+    "ECDSA_SECP256K1",
+    "BLS12_381",
+    "ECDSA_HASH160",
+    "BIP13_SCRIPT_HASH",
+    "EDDSA_25519_HASH160",
+};
+
+enum Purpose {
+    /// at least one authentication key must be registered for all security levels
+    "AUTHENTICATION",
+    /// this key cannot be used for signing documents
+    "ENCRYPTION",
+    /// this key cannot be used for signing documents
+    "DECRYPTION",
+    /// this key cannot be used for signing documents
+    "WITHDRAW",
+    /// this key cannot be used for signing documents
+    "SYSTEM",
+    /// this key cannot be used for signing documents
+    "VOTING",
+};
+
+enum SecurityLevel {
+    "MASTER",
+    "CRITICAL",
+    "HIGH",
+    "MEDIUM",
+};
+
+interface IdentifierWrapper {
+ constructor(sequence<u8> bytes);
+         [Name=random]
+        constructor();
+        [Name=from_string_with_encoding_string]
+        constructor(string str, string encoding);
+
+        string to_base58();
+
+};
+
+interface IdentityWrapper {
+    [Name=deserialize]
+    constructor(sequence<u8> bytes);
+    u32 get_protocol_version();
+    IdentifierWrapper get_id();
+};
