@@ -85,12 +85,16 @@ task buildRustLibrary {
 def udlFilePath = 'src/dpp.udl'
 
 // Define a task for generating UniFFI bindings
+// cargo +nightly run --features=uniffi/cli,uniffi-bindgen --bin uniffi-bindgen generate src/dpp.udl --language kotlin --out-dir build/generated/source/uniffi/main/java
 task generateUniFFIBindings(type: Exec) {
     workingDir "${project.projectDir}/src/main/rust"
+    print workingDir
 
     // Runs the bindings generation, note that you must have uniffi-bindgen installed and in your PATH environment variable
-    commandLine 'cargo', 'run', '--features=uniffi/cli', '--bin', 'uniffi-bindgen', 'generate', udlFilePath, '--language', 'kotlin', '--out-dir', "${buildDir}/generated/source/uniffi/main/java"
-    commandLine 'cp', 'target/release/libdpp.so', '../jniLibs/libuniffi_kotlin_dpp.so'
+    commandLine 'cargo', '+nightly', 'build', '--release'
+    // cargo +nightly run --features=uniffi/cli,uniffi-bindgen --bin uniffi-bindgen generate udlFilePath --language', 'kotlin', '--out-dir', "${buildDir}/generated/source/uniffi/main/java"
+    commandLine 'cargo', '+nightly', 'run', '--features=uniffi/cli,uniffi-bindgen', '--bin', 'uniffi-bindgen', 'generate', udlFilePath, '--language', 'kotlin', '--out-dir', "${buildDir}/generated/source/uniffi/main/java"
+    commandLine 'cp', 'target/release/libdpp.dylib', '../jniLibs/libuniffi_kotlin_dpp.dylib'
 }
 
 // Make the Kotlin compile task depend on the Uniffi generation task

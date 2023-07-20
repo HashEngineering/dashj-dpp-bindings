@@ -963,6 +963,7 @@ dependencies = [
 name = "kotlin-dpp"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "dpp",
  "serde_json",
  "uniffi",
