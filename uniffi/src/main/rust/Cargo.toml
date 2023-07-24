@@ -8,6 +8,7 @@ name = "dpp"
 crate-type = ["cdylib"]
 
 [dependencies]
+thiserror = "1.0"
 dpp = { git = "https://github.com/dashpay/platform.git", branch = "v0.25-dev", features = ["cbor"], default-features = false }
 uniffi = { version = "0.23.0" }
 serde_json = { version = "1.0" }

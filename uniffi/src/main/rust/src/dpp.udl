@@ -43,6 +43,54 @@ enum SecurityLevel {
     "MEDIUM",
 };
 
+[Error]
+enum ProtocolErrorType {
+    "IdentifierError",
+"StringDecodeError",
+"EmptyPublicKeyDataError",
+"MaxEncodedBytesReachedError",
+"EncodingError",
+"DecodingError",
+"FileNotFound",
+"UnknownProtocolVersionError",
+"NoProtocolVersionError",
+"ParsingError",
+"ParsingJsonError",
+"Error",
+"DataContractError",
+"StateTransitionError",
+"StructureError",
+"ConsensusError",
+"DocumentError",
+"Generic",
+"InvalidIdentityPublicKeyTypeError",
+"StateTransitionIsNotSignedError",
+"PublicKeySecurityLevelNotMetError",
+"WrongPublicKeyPurposeError",
+"PublicKeyMismatchError",
+"InvalidSignaturePublicKeyError",
+"NonConsensusError",
+"CompatibleProtocolVersionIsNotDefinedError",
+"DataContractAlreadyExistsError",
+"InvalidDataContractError",
+"InvalidDocumentTypeError",
+"DataContractNotPresentError",
+"InvalidSignaturePublicKeySecurityLevelError",
+"InvalidStateTransitionTypeError",
+"MissingDataContractIdError",
+"PublicKeyIsDisabledError",
+"IdentityNotPresentError",
+"Overflow",
+"DocumentKeyMissing",
+"ValueError",
+"PlatformSerializationError",
+"PlatformDeserializationError",
+"DashCoreError",
+"InvalidIdentityError",
+"PublicKeyGenerationError",
+"CorruptedCodeExecution"
+};
+
 interface IdentifierWrapper {
  constructor(sequence<u8> bytes);
          [Name=random]
@@ -51,7 +99,6 @@ interface IdentifierWrapper {
         constructor(string str, string encoding);
 
         string to_base58();
-
 };
 
 interface IdentityWrapper {
@@ -59,4 +106,28 @@ interface IdentityWrapper {
     constructor(sequence<u8> bytes);
     u32 get_protocol_version();
     IdentifierWrapper get_id();
+    u64 get_balance();
+    //void set_balance(u64 balance);
+    //u64 increase_balance(u64 amount);
+    //u64 reduce_balance(u64 amount);
+    u64 get_revision();
+    //[Throws=ProtocolErrorType]
+    //void increment_revision();
+        u32 get_public_key_max_id();
+        IdentityPublicKeyWrapper? get_public_key_by_id(u32 key_id);
+};
+interface BinaryDataWrapper {
+
+};
+
+interface IdentityPublicKeyWrapper {
+    boolean is_disabled();
+    boolean is_master();
+    u32 get_id();
+        Purpose get_purpose();
+        SecurityLevel get_security_level();
+        KeyType get_key_type();
+        boolean get_read_only();
+        sequence<u8> get_data();
+    u64? get_disabled_at();
 };
