@@ -13,6 +13,7 @@ version '0.25-SNAPSHOT'
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation 'org.dashj.platform:dpp:0.24-SNAPSHOT'
+    implementation 'org.dashj:dashj-core:19.1-CJ-SNAPSHOT'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
 }
@@ -27,7 +28,7 @@ task buildRustLibrary {
 }
 
 tasks.withType(Test) {
-    systemProperty "java.library.path", "./src/main/rust/target/release"
+    systemProperty "java.library.path", "./src/main/rust/target/release:./src/main/jniLibs"
 }
 
 compileKotlin {
@@ -37,6 +38,11 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 task sourcesJar(type: Jar) {
     classifier 'sources'

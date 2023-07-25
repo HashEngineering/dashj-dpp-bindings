@@ -6,7 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = { version = "1.0.70" }
+async-trait = { version = "0.1.68" }
+tokio = { version = "1", features = ["full"] }
 dpp = { git = "https://github.com/dashpay/platform.git", branch = "v0.25-dev", features = ["cbor"], default-features = false }
+#dpp = { git = "https://github.com/dashpay/platform.git", tag = "v0.24.13", default-features = false }
 platform-value = { git = "https://github.com/dashpay/platform.git", branch = "v0.25-dev", default-features = false }
 hex = "0.4"
 

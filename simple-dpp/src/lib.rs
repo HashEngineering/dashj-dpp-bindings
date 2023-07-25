@@ -1,9 +1,10 @@
 pub mod simple_dpp;
+mod state_repository;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }
-
+pub use async_trait;
 // #[allow(non_snake_case)]
 // pub mod simple-dpp {
 //     //extern crate jni;

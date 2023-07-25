@@ -3,14 +3,19 @@
 pub mod dpp_jni {
     use dpp::version::LATEST_VERSION;
     use jni::JNIEnv;
-    use jni::objects::{JClass, JList, JMap, JObject, JValue, JString, JPrimitiveArray, ReleaseMode};
+    use jni::objects::{JClass, JList, JMap, JObject, JString, JPrimitiveArray, ReleaseMode};
     use jni::strings::JavaStr;
     use jni::sys::{JNI_TRUE, jbyteArray, jbyte, jint, jboolean};
     use platform_value::Value;
     //use std::any::Any;
 
     use mylibrary::simple_dpp::create_identity_cbor;
-    use mylibrary::simple_dpp::create_identity_from_raw_object;
+    use mylibrary::simple_dpp::{create_identity_from_raw_object,
+                                identity_create_transition_signable_bytes_from_raw_object,
+                                identity_create_transition_serialize_from_raw_object,
+                                identity_create_transition_verify_from_raw_object,
+                                create_identity_from_raw_bytes,
+                                serialize_identity_from_raw_object};
     use std::collections::BTreeMap;
 
 
@@ -81,6 +86,166 @@ pub mod dpp_jni {
         }
     }
 
+    #[no_mangle]
+    #[allow(non_snake_case)]
+    pub extern "system" fn Java_org_dashj_dpp_DPP_serializeIdentityFromRawObject(
+        mut env: JNIEnv,
+        _: JClass,
+        jmap: JObject
+    ) -> jbyteArray {
+
+        let btree_map = convert_jmap_to_btreemap(&mut env, &jmap);
+        let _platform_value: Value = btree_map.into();
+
+        let result = serialize_identity_from_raw_object(_platform_value);
+
+        match result {
+            Err(_) => {
+                let error = result.err();
+                println!("Error decoding json: {:?}", error);
+                let empty_vec: Vec<u8> = vec![];
+                let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                byte_array.as_raw()
+            }
+            Ok(bytes) => {
+                let byte_array = env.byte_array_from_slice(&*bytes).unwrap();
+                byte_array.as_raw()
+            }
+        }
+    }
+
+    #[no_mangle]
+    #[allow(non_snake_case)]
+    pub extern "system" fn Java_org_dashj_dpp_DPP_validateIdentityCreateTransition(
+        mut env: JNIEnv,
+        _: JClass,
+        jmap: JObject
+    ) -> jboolean {
+
+        let btree_map = convert_jmap_to_btreemap(&mut env, &jmap);
+        let _platform_value: Value = btree_map.into();
+
+        let result = identity_create_transition_verify_from_raw_object(_platform_value);
+
+        match result {
+            Err(_) => {
+                let error = result.err();
+                println!("Error decoding json: {:?}", error);
+                false.into()
+            }
+            Ok(valid) => {
+                valid.into()
+            }
+        }
+    }
+
+    #[no_mangle]
+    #[allow(non_snake_case)]
+    pub extern "system" fn Java_org_dashj_dpp_DPP_serializeIdentityCreateTransition(
+        mut env: JNIEnv,
+        _: JClass,
+        jmap: JObject
+    ) -> jbyteArray {
+
+        let btree_map = convert_jmap_to_btreemap(&mut env, &jmap);
+        let _platform_value: Value = btree_map.into();
+
+        let result = identity_create_transition_serialize_from_raw_object(_platform_value);
+
+        match result {
+            Err(_) => {
+                let error = result.err();
+                println!("Error decoding json: {:?}", error);
+                let empty_vec: Vec<u8> = vec![];
+                let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                byte_array.as_raw()
+            }
+            Ok(bytes) => {
+                let byte_array = env.byte_array_from_slice(&*bytes).unwrap();
+                byte_array.as_raw()
+            }
+        }
+    }
+
+    #[no_mangle]
+    #[allow(non_snake_case)]
+    pub extern "system" fn Java_org_dashj_dpp_DPP_signableBytesIdentityCreateTransition(
+        mut env: JNIEnv,
+        _: JClass,
+        jmap: JObject
+    ) -> jbyteArray {
+
+        let btree_map = convert_jmap_to_btreemap(&mut env, &jmap);
+        let _platform_value: Value = btree_map.into();
+
+        let result = identity_create_transition_signable_bytes_from_raw_object(_platform_value);
+
+        match result {
+            Err(_) => {
+                let error = result.err();
+                println!("Error decoding json: {:?}", error);
+                let empty_vec: Vec<u8> = vec![];
+                let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                byte_array.as_raw()
+            }
+            Ok(bytes) => {
+                let byte_array = env.byte_array_from_slice(&*bytes).unwrap();
+                byte_array.as_raw()
+            }
+        }
+    }
+
+    use jni::objects::JByteArray;
+    use jni::sys::{jsize};
+
+    fn convert_jbytearray_to_vec(env: &mut JNIEnv, array: &JByteArray) -> Vec<u8> {
+        // Get the length of the jbyteArray
+        //let length: jsize = env.get_array_length(array).expect("Failed to get array length");
+
+        // Get the elements of the jbyteArray
+        let elements: Vec<i8> = unsafe { env.get_array_elements(array, ReleaseMode::NoCopyBack).unwrap().to_vec() };
+
+        let vec: Vec<u8> = elements.to_vec().iter().map(|&byte| byte as u8).collect();
+        // Copy the elements into a new Vec<u8>
+        //let vec = elements.to_owned()
+
+        // Release the elements of the jbyteArray
+        //env.release_array_elements(
+        //    array,
+        //    elements,
+        //    jni::sys::JNI_ABORT // We don't need to copy back the elements to the Java array
+        //).expect("Failed to release byte array elements");
+
+        vec
+    }
+
+    #[no_mangle]
+    #[allow(non_snake_case)]
+    pub extern "system" fn Java_org_dashj_dpp_DPP_getIdentityCborFromBincode(
+        mut env: JNIEnv,
+        _: JClass,
+        byteArray: JByteArray
+    ) -> jbyteArray {
+
+        let byte_array = convert_jbytearray_to_vec(&mut env, &byteArray);
+
+        let result = create_identity_from_raw_bytes(byte_array);
+
+        match result {
+            Err(_) => {
+                let error = result.err();
+                println!("Error decoding json: {:?}", error);
+                let empty_vec: Vec<u8> = vec![];
+                let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                byte_array.as_raw()
+            }
+            Ok(bytes) => {
+                let byte_array = env.byte_array_from_slice(&*bytes).unwrap();
+                byte_array.as_raw()
+            }
+        }
+    }
+
     fn convert_jmap_to_btreemap(env: &mut JNIEnv, jmap: &JObject) -> Value {
         let btreemap = convert_jobject_to_rust(env, &jmap);
         btreemap
@@ -109,16 +274,18 @@ pub mod dpp_jni {
         output.into_iter().map(|b| b as u8).collect()
     }
 
-    fn get_byte_array_from_java_primitive_array(env: &mut JNIEnv, byte_array: JPrimitiveArray<jbyte>) -> Vec<u8> {
-        let length = env.get_array_length(&byte_array)
-            .expect("Couldn't fetch array length") as usize;
 
-        let mut output: Vec<i8> = vec![0; length];
-        env.get_byte_array_region(byte_array, 0, &mut output)
-            .expect("Couldn't get byte array region");
 
-        output.into_iter().map(|b| b as u8).collect()
-    }
+    // fn get_byte_array_from_java_primitive_array(env: &mut JNIEnv, byte_array: JPrimitiveArray<jbyte>) -> Vec<u8> {
+    //     let length = env.get_array_length(&byte_array)
+    //         .expect("Couldn't fetch array length") as usize;
+    //
+    //     let mut output: Vec<i8> = vec![0; length];
+    //     env.get_byte_array_region(byte_array, 0, &mut output)
+    //         .expect("Couldn't get byte array region");
+    //
+    //     output.into_iter().map(|b| b as u8).collect()
+    // }
 
     fn convert_jobject_to_rust(env: &mut JNIEnv, obj: &JObject) -> Value {
         if env.is_instance_of(obj, "java/lang/Integer").unwrap() {
@@ -177,6 +344,8 @@ pub mod dpp_jni {
             //     move occurs because `*obj` has type `JObject<'_>`, which does not implement the `Copy` trait
 
             // Value::Bytes(get_byte_array_from_java_primitive_array(env, (*obj).into()))
+        } else if obj.is_null() {
+            Value::Null
         } else {
             let class_obj = env.get_object_class(obj).unwrap();
             let class_name_jstring: jni::objects::JObject = env.call_method(class_obj, "getName", "()Ljava/lang/String;", &[]).unwrap().l().unwrap().into();
