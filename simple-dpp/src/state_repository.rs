@@ -138,7 +138,7 @@ impl StateRepositoryLike for MyStateRepository {
     }
 
     async fn fetch_latest_platform_core_chain_locked_height(&self) -> AnyResult<Option<u32>> {
-        todo!()
+        Ok(Some(127414))
     }
 
     async fn enqueue_withdrawal_transaction(&self, index: u64, transaction_bytes: Vec<u8>) -> AnyResult<()> {

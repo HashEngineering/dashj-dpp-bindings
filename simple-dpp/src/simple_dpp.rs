@@ -419,6 +419,19 @@ fn create_identity_transition_test() {
         Err(error) => panic!("validation failed {}", error)
     }
 
+    let signable = decode("0202000000000021038035e6856dd646654eb1a76dd9bd93af0e21889feb68a652fb8360974be3b6a90100000200210396605ff4ca17f88a6294d8ce5b65d7ae797ab7ef61f7ff38acdf036cf9c61c0d0101fc0001edce9683e679611f3c2f0bfaf7f8ee55f9312fbf059a421e36ab5d3c4a854946ca220000000001").unwrap();
+    let serialized = decode("0202000000000021038035e6856dd646654eb1a76dd9bd93af0e21889feb68a652fb8360974be3b6a9412085d4139c1f81b223beee448f92b117fd489a995424102c40b2ca4ec6cd31ce7e7b9410e2aa8a88f47f6fcf757bdd801b7f8f091c3bf803f850c64ee24e7c62e90100000200210396605ff4ca17f88a6294d8ce5b65d7ae797ab7ef61f7ff38acdf036cf9c61c0d4120ca609cbb2f4a2fe563ffb4d093e59e3f2bb3f3bdb56cf7fe2ddf7b4e16f43d685d1a56caac7e8476adb7e2cc131db1b9a3a3fa78fa10f36724d20fb69de69d5a0101fc0001edce9683e679611f3c2f0bfaf7f8ee55f9312fbf059a421e36ab5d3c4a854946ca220000000001411ff1764ead95ff03f90b177fa138bd0b510309da5ac75b6b0498d18f4a1f55036c77d6626b9dc660b54ca9f7085fef1a9070d2694e064175c6b68cb9d947b2017ee4adf70cd99961ea20fac1b639b9c72e8511914f547877857bd560a1dca71d76").unwrap();
+
+    let real_transition = IdentityCreateTransition::deserialize(serialized.as_slice()).unwrap();
+
+    let transition = identity_create_transition_verify_from_raw_object(real_transition.to_object(false).unwrap());
+    match transition {
+        Ok(validated) => {
+            println!("validation {}", validated);
+            assert!(validated)
+        },
+        Err(error) => panic!("validation failed {}", error)
+    }
 }
 
 #[test]

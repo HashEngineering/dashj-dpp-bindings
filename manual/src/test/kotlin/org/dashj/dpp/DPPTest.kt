@@ -1,9 +1,13 @@
 package org.dashj.dpp
 
-import org.bitcoinj.core.ECKey
-import org.bitcoinj.core.Sha256Hash
+import org.bitcoinj.core.*
+import org.bitcoinj.crypto.BLSLazySignature
+import org.bitcoinj.crypto.BLSSignature
 import org.bitcoinj.params.AbsintheDevNetParams
 import org.bitcoinj.params.TestNet3Params
+import org.bitcoinj.quorums.InstantSendLock
+import org.bitcoinj.script.ScriptBuilder
+import org.bitcoinj.script.ScriptPattern
 import org.dashj.dpp.DPP.validateIdentityCreateTransition
 import org.dashj.platform.dpp.identifier.Identifier
 import org.dashj.platform.dpp.identity.Identity
@@ -110,15 +114,25 @@ class DPPTest {
 
     @Test
     fun privateKeyTest() {
-        val privateKey1 = ECKey();
-        val privateKey2 = ECKey();
+        val context = Context(AbsintheDevNetParams.get())
+        val privateKey1 = ECKey()
+        val privateKey2 = ECKey()
+        val creditBurnKey = ECKey()
+        val privateKeys = listOf(privateKey1, privateKey2)
+
+        val tx = Transaction(AbsintheDevNetParams.get(), Converters.fromHex("03000000018C6A321936A4DA0649AA8EEB2DA3280C10088C057A22BAF2BF987951924E8CC8000000006A473044022073ED0EE14ACDFD31AE0E3627109676B065B97651342187F7501E42525404AD2602205B7F12C535D0A7A5693390D3456C93752B15D39467A63C687B516C5AAFB93A7B0121027D916607B92BAC0A1527AA126ADACBDC24E749989ADC0CD2C62DFC0A0D4035E3FFFFFFFF0140420F0000000000166A1425EC403D0CEF684745E7741E90183CC0F128277500000000".lowercase()))
+        tx.clearOutputs()
+        tx.addOutput(TransactionOutput(AbsintheDevNetParams.get(), tx, Coin.CENT, ScriptBuilder.createCreditBurnOutput(creditBurnKey).program))
+
+        val islock2 = InstantSendLock(AbsintheDevNetParams.get(), Converters.fromHex("01011DBBDA5861B12D7523F20AA5E0D42F52DE3DCD2D5C2FE919BA67B59F050D206E00000000C00964FF90E9C29E60682E0FE18598DDD462F3A8EB92615CF422888C95F1DCAD2E02C76C7E57779AFD9942F983AFBFE2F1E0DD07CAB57A75A776B062DFD0C80D000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000".lowercase()), InstantSendLock.ISDLOCK_VERSION)
+        val islock = InstantSendLock(AbsintheDevNetParams.get(), tx.inputs.map { it.outpoint }, tx.txId, Sha256Hash.wrap("0dc8d0df62b076a7757ab5ca07dde0f1e2bfaf83f94299fd9a77577e6cc7022e"), BLSLazySignature())
 
         val raw_transition = mapOf<String, Any?>(
             "protocolVersion" to ProtocolVersion.latestProtocolVersion,
             "assetLockProof" to mapOf(
                 "type" to 0,
-                "instantLock" to Converters.fromHex("01011DBBDA5861B12D7523F20AA5E0D42F52DE3DCD2D5C2FE919BA67B59F050D206E00000000C00964FF90E9C29E60682E0FE18598DDD462F3A8EB92615CF422888C95F1DCAD2E02C76C7E57779AFD9942F983AFBFE2F1E0DD07CAB57A75A776B062DFD0C80D000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000".lowercase()),
-                "transaction" to Converters.fromHex("03000000018C6A321936A4DA0649AA8EEB2DA3280C10088C057A22BAF2BF987951924E8CC8000000006A473044022073ED0EE14ACDFD31AE0E3627109676B065B97651342187F7501E42525404AD2602205B7F12C535D0A7A5693390D3456C93752B15D39467A63C687B516C5AAFB93A7B0121027D916607B92BAC0A1527AA126ADACBDC24E749989ADC0CD2C62DFC0A0D4035E3FFFFFFFF0140420F0000000000166A1425EC403D0CEF684745E7741E90183CC0F128277500000000".lowercase()),
+                "instantLock" to islock.bitcoinSerialize(), //Converters.fromHex("01011DBBDA5861B12D7523F20AA5E0D42F52DE3DCD2D5C2FE919BA67B59F050D206E00000000C00964FF90E9C29E60682E0FE18598DDD462F3A8EB92615CF422888C95F1DCAD2E02C76C7E57779AFD9942F983AFBFE2F1E0DD07CAB57A75A776B062DFD0C80D000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000".lowercase()),
+                "transaction" to tx.bitcoinSerialize(), //Converters.fromHex("03000000018C6A321936A4DA0649AA8EEB2DA3280C10088C057A22BAF2BF987951924E8CC8000000006A473044022073ED0EE14ACDFD31AE0E3627109676B065B97651342187F7501E42525404AD2602205B7F12C535D0A7A5693390D3456C93752B15D39467A63C687B516C5AAFB93A7B0121027D916607B92BAC0A1527AA126ADACBDC24E749989ADC0CD2C62DFC0A0D4035E3FFFFFFFF0140420F0000000000166A1425EC403D0CEF684745E7741E90183CC0F128277500000000".lowercase()),
                 "outputIndex" to 0
             ),
             "publicKeys" to listOf(
@@ -155,14 +169,14 @@ class DPPTest {
             //assertArrayEquals(bytes1, DPP.signableBytesIdentityCreateTransition(ict.toObject()))
 
             val bytes = DPP.signableBytesIdentityCreateTransition(ict.toObject())
-            val sig = privateKey1.signHash(Sha256Hash.twiceOf(bytes1))
+            val sig = privateKeys[i].signHash(Sha256Hash.twiceOf(bytes1))
             ict.publicKeys[i].signature = sig
 
             println(bytes.toHex())
             println(sig.toHex())
         }
         val bytesTransition = DPP.signableBytesIdentityCreateTransition(ict.toObject())
-        val sigTransition = privateKey1.signHash(Sha256Hash.twiceOf(bytesTransition))
+        val sigTransition = creditBurnKey.signHash(Sha256Hash.twiceOf(bytesTransition))
         ict.signature = sigTransition
 
         assertTrue(validateIdentityCreateTransition(ict.toObject()))

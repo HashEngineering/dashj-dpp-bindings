@@ -966,6 +966,7 @@ dependencies = [
  "bytes",
  "dpp",
  "serde_json",
+ "thiserror",
  "uniffi",
 ]
 

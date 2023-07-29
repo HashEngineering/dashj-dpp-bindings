@@ -25,7 +25,7 @@ pub mod dpp_jni {
     }
 
     #[no_mangle]
-    pub unsafe extern fn Java_org_dashj_dpp_DPP_createIdentityCbor(env: JNIEnv, _: JClass) -> jbyteArray {
+    pub unsafe extern fn Java_org_dashj_dpp_DPP_createIdentityCbor(mut env: JNIEnv, _: JClass) -> jbyteArray {
         let result = create_identity_cbor();
 
         match result {
@@ -34,6 +34,7 @@ pub mod dpp_jni {
                 println!("Error decoding json: {:?}", error);
                 let empty_vec: Vec<u8> = vec![];
                 let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                env.throw_new("java/lang/Exception", error.expect("error expected").to_string());
                 byte_array.as_raw()
             }
             Ok(bytes) => {
@@ -77,6 +78,7 @@ pub mod dpp_jni {
                 println!("Error decoding json: {:?}", error);
                 let empty_vec: Vec<u8> = vec![];
                 let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                env.throw_new("java/lang/Exception", error.expect("error expected").to_string());
                 byte_array.as_raw()
             }
             Ok(bytes) => {
@@ -105,6 +107,7 @@ pub mod dpp_jni {
                 println!("Error decoding json: {:?}", error);
                 let empty_vec: Vec<u8> = vec![];
                 let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                env.throw_new("java/lang/Exception", error.expect("error expected").to_string());
                 byte_array.as_raw()
             }
             Ok(bytes) => {
@@ -158,6 +161,7 @@ pub mod dpp_jni {
                 println!("Error decoding json: {:?}", error);
                 let empty_vec: Vec<u8> = vec![];
                 let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                env.throw_new("java/lang/Exception", error.expect("there should be an error").to_string());
                 byte_array.as_raw()
             }
             Ok(bytes) => {
@@ -181,11 +185,11 @@ pub mod dpp_jni {
         let result = identity_create_transition_signable_bytes_from_raw_object(_platform_value);
 
         match result {
-            Err(_) => {
-                let error = result.err();
+            Err(error) => {
                 println!("Error decoding json: {:?}", error);
                 let empty_vec: Vec<u8> = vec![];
                 let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                env.throw_new("java/lang/Exception", error.to_string());
                 byte_array.as_raw()
             }
             Ok(bytes) => {
@@ -237,6 +241,7 @@ pub mod dpp_jni {
                 println!("Error decoding json: {:?}", error);
                 let empty_vec: Vec<u8> = vec![];
                 let byte_array = env.byte_array_from_slice(&empty_vec).unwrap();
+                env.throw_new("java/lang/Exception", error.expect("error expected").to_string());
                 byte_array.as_raw()
             }
             Ok(bytes) => {
