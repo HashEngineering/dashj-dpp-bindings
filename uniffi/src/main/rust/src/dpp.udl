@@ -2,4 +2,132 @@ namespace kotlin_dpp {
     u32 latest_protocol_version();
 };
 
+enum StateTransitionType {
+    "DataContractCreate",
+    "DocumentsBatch",
+    "IdentityCreate",
+    "IdentityTopUp",
+    "DataContractUpdate",
+    "IdentityUpdate",
+    "IdentityCreditWithdrawal",
+    "IdentityCreditTransfer",
+};
 
+enum KeyType {
+    "ECDSA_SECP256K1",
+    "BLS12_381",
+    "ECDSA_HASH160",
+    "BIP13_SCRIPT_HASH",
+    "EDDSA_25519_HASH160",
+};
+
+enum Purpose {
+    /// at least one authentication key must be registered for all security levels
+    "AUTHENTICATION",
+    /// this key cannot be used for signing documents
+    "ENCRYPTION",
+    /// this key cannot be used for signing documents
+    "DECRYPTION",
+    /// this key cannot be used for signing documents
+    "WITHDRAW",
+    /// this key cannot be used for signing documents
+    "SYSTEM",
+    /// this key cannot be used for signing documents
+    "VOTING",
+};
+
+enum SecurityLevel {
+    "MASTER",
+    "CRITICAL",
+    "HIGH",
+    "MEDIUM",
+};
+
+[Error]
+enum ProtocolErrorType {
+    "IdentifierError",
+"StringDecodeError",
+"EmptyPublicKeyDataError",
+"MaxEncodedBytesReachedError",
+"EncodingError",
+"DecodingError",
+"FileNotFound",
+"UnknownProtocolVersionError",
+"NoProtocolVersionError",
+"ParsingError",
+"ParsingJsonError",
+"Error",
+"DataContractError",
+"StateTransitionError",
+"StructureError",
+"ConsensusError",
+"DocumentError",
+"Generic",
+"InvalidIdentityPublicKeyTypeError",
+"StateTransitionIsNotSignedError",
+"PublicKeySecurityLevelNotMetError",
+"WrongPublicKeyPurposeError",
+"PublicKeyMismatchError",
+"InvalidSignaturePublicKeyError",
+"NonConsensusError",
+"CompatibleProtocolVersionIsNotDefinedError",
+"DataContractAlreadyExistsError",
+"InvalidDataContractError",
+"InvalidDocumentTypeError",
+"DataContractNotPresentError",
+"InvalidSignaturePublicKeySecurityLevelError",
+"InvalidStateTransitionTypeError",
+"MissingDataContractIdError",
+"PublicKeyIsDisabledError",
+"IdentityNotPresentError",
+"Overflow",
+"DocumentKeyMissing",
+"ValueError",
+"PlatformSerializationError",
+"PlatformDeserializationError",
+"DashCoreError",
+"InvalidIdentityError",
+"PublicKeyGenerationError",
+"CorruptedCodeExecution"
+};
+
+interface IdentifierWrapper {
+ constructor(sequence<u8> bytes);
+         [Name=random]
+        constructor();
+        [Name=from_string_with_encoding_string]
+        constructor(string str, string encoding);
+
+        string to_base58();
+};
+
+interface IdentityWrapper {
+    [Name=deserialize]
+    constructor(sequence<u8> bytes);
+    u32 get_protocol_version();
+    IdentifierWrapper get_id();
+    u64 get_balance();
+    //void set_balance(u64 balance);
+    //u64 increase_balance(u64 amount);
+    //u64 reduce_balance(u64 amount);
+    u64 get_revision();
+    //[Throws=ProtocolErrorType]
+    //void increment_revision();
+        u32 get_public_key_max_id();
+        IdentityPublicKeyWrapper? get_public_key_by_id(u32 key_id);
+};
+interface BinaryDataWrapper {
+
+};
+
+interface IdentityPublicKeyWrapper {
+    boolean is_disabled();
+    boolean is_master();
+    u32 get_id();
+        Purpose get_purpose();
+        SecurityLevel get_security_level();
+        KeyType get_key_type();
+        boolean get_read_only();
+        sequence<u8> get_data();
+    u64? get_disabled_at();
+};

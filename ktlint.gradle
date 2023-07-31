@@ -35,7 +35,7 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
 }
 
 detekt {
-    config = files("detekt/ruleset.yml")
+    config = files("../detekt/ruleset.yml")
 
     // Applies the config files on top of detekt's default config file. `false` by default.
     buildUponDefaultConfig = true
